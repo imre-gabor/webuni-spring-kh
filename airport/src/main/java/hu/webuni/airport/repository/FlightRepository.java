@@ -2,6 +2,8 @@ package hu.webuni.airport.repository;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Iterator;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -22,9 +24,20 @@ public interface FlightRepository extends JpaRepository<Flight, Long>,
 
 		bindings.bind(flight.flightNumber).first((path, value) -> path.startsWithIgnoreCase(value));
 		bindings.bind(flight.takeoff.iata).first((path, value) -> path.startsWith(value));
-		bindings.bind(flight.takeoffTime).first((path, value) -> {
-			LocalDateTime startOfDay = LocalDateTime.of(value.toLocalDate(), LocalTime.MIDNIGHT);
-			return path.between(startOfDay, startOfDay.plusDays(1));
+//		bindings.bind(flight.takeoffTime).first((path, value) -> {
+//			LocalDateTime startOfDay = LocalDateTime.of(value.toLocalDate(), LocalTime.MIDNIGHT);
+//			return path.between(startOfDay, startOfDay.plusDays(1));
+//		});
+		bindings.bind(flight.takeoffTime).all((path, values) -> {
+			if(values.size() < 2)
+				return Optional.empty();
+			
+			Iterator<? extends LocalDateTime> it = values.iterator();
+			LocalDateTime start = it.next();
+			LocalDateTime end = it.next();
+			LocalDateTime startOfDay = LocalDateTime.of(start.toLocalDate(), LocalTime.MIDNIGHT);
+			LocalDateTime endOfDay = LocalDateTime.of(end.toLocalDate(), LocalTime.MAX);
+			return Optional.of(path.between(startOfDay, endOfDay));
 		});
 	}
 
