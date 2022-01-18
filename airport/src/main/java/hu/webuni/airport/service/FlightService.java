@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -64,33 +63,35 @@ public class FlightService {
 //		return flightRepository.findAll(spec, Sort.by("id"));
 //	}
 	
-	public List<Flight> findFlightsByExample(Flight example){
-		
+	public List<Flight> findFlightsByExample(Flight example) {
+
 		long id = example.getId();
 		String flightNumber = example.getFlightNumber();
 		String takeoffIata = null;
 		Airport takeoff = example.getTakeoff();
-		if(takeoff != null)
-			takeoffIata  = takeoff.getIata();
+		if (takeoff != null)
+			takeoffIata = takeoff.getIata();
 		LocalDateTime takeoffTime = example.getTakeoffTime();
+
+		ArrayList<Predicate> predicates = new ArrayList<Predicate>();
 		
-		List<Predicate> predicates = new ArrayList<>();
 		QFlight flight = QFlight.flight;
-		
-		if(id > 0)
+		if (id > 0) {
 			predicates.add(flight.id.eq(id));
-		
-		if(StringUtils.hasText(flightNumber))
+		}
+
+		if (StringUtils.hasText(flightNumber))
 			predicates.add(flight.flightNumber.startsWithIgnoreCase(flightNumber));
-		
-		if(StringUtils.hasText(takeoffIata))
+
+		if (StringUtils.hasText(takeoffIata))
 			predicates.add(flight.takeoff.iata.startsWith(takeoffIata));
-		
-		if(takeoffTime != null) {
+
+		if (takeoffTime != null) {
 			LocalDateTime startOfDay = LocalDateTime.of(takeoffTime.toLocalDate(), LocalTime.MIDNIGHT);
 			predicates.add(flight.takeoffTime.between(startOfDay, startOfDay.plusDays(1)));
 		}
-		return Lists.newArrayList(flightRepository.findAll(ExpressionUtils.allOf(predicates), Sort.by("id")));
+			
+		return Lists.newArrayList(flightRepository.findAll(ExpressionUtils.allOf(predicates)));
 	}
 
 }

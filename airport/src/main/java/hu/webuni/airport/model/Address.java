@@ -19,7 +19,7 @@ import lombok.Setter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 public class Address {
-
+	
 	@Id
 	@GeneratedValue
 	@EqualsAndHashCode.Include()
@@ -29,4 +29,5 @@ public class Address {
 	private String city;
 	private String street;
 	private String zip;
+
 }
