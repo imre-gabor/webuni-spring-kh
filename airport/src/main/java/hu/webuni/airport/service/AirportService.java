@@ -49,18 +49,6 @@ public class AirportService {
 		return airportRepository.findAll();
 	}
 	
-	@Transactional
-	public List<Airport> findAllWithRelationships(Pageable pageable){
-		List<Airport> airports = airportRepository.findAllWithAddress(pageable);
-		List<Long> airportIds = airports.stream().map(Airport::getId).toList();
-
-		airports = airportRepository.findByIdWithArrivals(airportIds);
-		airports = airportRepository.findByIdWithDepartures(airportIds);
-//		List<Airport> airports = airportRepository.findAllWithAddressAndDepartures(pageable);
-//		airports = airportRepository.findAllWithArrivals(pageable);
-		return airports;
-	}
-	
 	public Optional<Airport> findById(long id){
 		return airportRepository.findById(id);
 	}
