@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,18 @@ public class AirportService {
 	
 	public List<Airport> findAll(){
 		return airportRepository.findAll();
+	}
+	
+	@Transactional
+	public List<Airport> findAllWithRelationships(Pageable pageable){
+		List<Airport> airports = airportRepository.findAllWithAddress(pageable);
+		List<Long> airportIds = airports.stream().map(Airport::getId).toList();
+
+		airports = airportRepository.findByIdWithArrivals(airportIds);
+		airports = airportRepository.findByIdWithDepartures(airportIds);
+//		List<Airport> airports = airportRepository.findAllWithAddressAndDepartures(pageable);
+//		airports = airportRepository.findAllWithArrivals(pageable);
+		return airports;
 	}
 	
 	public Optional<Airport> findById(long id){

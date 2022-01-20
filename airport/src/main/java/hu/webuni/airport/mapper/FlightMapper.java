@@ -17,6 +17,4 @@ public interface FlightMapper {
 
 	List<FlightDto> flightsToDtos(Iterable<Flight> findAll);
 
-	List<FlightDto> flightsToDtos(Iterable<Flight> findAll);
-
 }

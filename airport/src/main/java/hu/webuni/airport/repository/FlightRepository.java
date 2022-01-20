@@ -14,7 +14,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.model.QFlight;
 
-public interface FlightRepository extends JpaRepository<Flight, Long>, 
+public interface FlightRepository extends JpaRepository<Flight, Long>,
 		JpaSpecificationExecutor<Flight>,
 		QuerydslPredicateExecutor<Flight>,
 		QuerydslBinderCustomizer<QFlight>{

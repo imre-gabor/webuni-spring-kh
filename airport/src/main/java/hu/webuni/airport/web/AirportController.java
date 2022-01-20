@@ -2,9 +2,12 @@ package hu.webuni.airport.web;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import hu.webuni.airport.dto.AirportDto;
 import hu.webuni.airport.mapper.AirportMapper;
 import hu.webuni.airport.model.Airport;
+import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.service.AirportService;
 import lombok.RequiredArgsConstructor;
 
@@ -29,13 +34,24 @@ import lombok.RequiredArgsConstructor;
 public class AirportController {
 
 	private final AirportService airportService;
+	private final AirportRepository airportRepository;
 	
 	private final AirportMapper airportMapper;
 	
 	
 	@GetMapping
-	public List<AirportDto> getAll(){
-		return airportMapper.airportsToDtos(airportService.findAll());
+	public List<AirportDto> getAll(@RequestParam Optional<Boolean> full, @SortDefault("id") Pageable pageable){
+		
+		
+		List<Airport> airports = null;
+		boolean withaddress = full.orElse(false);
+		airports = withaddress 
+				? airportService.findAllWithRelationships(pageable)		
+						//airportService.findAllWithRelationships() 
+						//airportRepository.findAllWithAddressAndDepartures() 
+				: airportRepository.findAll(pageable).getContent();
+//		airports.forEach(a -> a.getAddress().getCity());
+		return withaddress ? airportMapper.airportsToDtos(airports) : airportMapper.airportsToBaseDtos(airports);
 	}
 	
 	@GetMapping("/{id}")
