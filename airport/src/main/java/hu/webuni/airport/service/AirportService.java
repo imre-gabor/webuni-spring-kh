@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,19 @@ public class AirportService {
 	@Transactional
 	public void delete(long id) {
 		airportRepository.deleteById(id);
+	}
+
+	@Transactional
+	public List<Airport> findAllWithRelationships(Pageable pageable) {
+//		List<Airport> airports = airportRepository.findAllWithAddressAndDepartures(pageable); --> in memory lapozás, minden sor bejön a DB-ből
+//		airports = airportRepository.findAllWithArrivals(pageable);
+		
+		List<Airport> airports = airportRepository.findAllWithAddress(pageable);
+		List<Long> airportIds = airports.stream().map(Airport::getId).toList();
+		
+		airports = airportRepository.findByIdWithArrivals(airportIds);
+		airports = airportRepository.findByIdWithDepartures(airportIds);
+		return airports;
 	}
 	
 }
