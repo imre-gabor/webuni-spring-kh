@@ -58,7 +58,7 @@ public class AirportController {
 		Airport airport = airportService.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 		
-		return airportMapper.airportToDto(airport);
+		return airportMapper.airportSummaryToDto(airport);
 	}
 	
 	@PostMapping
