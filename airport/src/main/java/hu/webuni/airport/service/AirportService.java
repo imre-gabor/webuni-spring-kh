@@ -69,5 +69,18 @@ public class AirportService {
 	public void delete(long id) {
 		airportRepository.deleteById(id);
 	}
+
+	@Transactional
+	public List<Airport> findAllWithRelationships(Pageable pageable) {
+//		List<Airport> airports = airportRepository.findAllWithAddressAndDepartures(pageable); --> in memory lapozás, minden sor bejön a DB-ből
+//		airports = airportRepository.findAllWithArrivals(pageable);
+		
+		List<Airport> airports = airportRepository.findAllWithAddress(pageable);
+		List<Long> airportIds = airports.stream().map(Airport::getId).toList();
+		
+		airports = airportRepository.findByIdWithArrivals(airportIds);
+		airports = airportRepository.findByIdWithDepartures(airportIds);
+		return airports;
+	}
 	
 }

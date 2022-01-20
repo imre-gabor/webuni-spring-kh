@@ -40,18 +40,17 @@ public class AirportController {
 	
 	
 	@GetMapping
-	public List<AirportDto> getAll(@RequestParam Optional<Boolean> full, @SortDefault("id") Pageable pageable){
-		
-		
-		List<Airport> airports = null;
-		boolean withaddress = full.orElse(false);
-		airports = withaddress 
-				? airportService.findAllWithRelationships(pageable)		
-						//airportService.findAllWithRelationships() 
-						//airportRepository.findAllWithAddressAndDepartures() 
+	public List<AirportDto> getAll(@RequestParam Optional<Boolean> full, 
+			@SortDefault("id") Pageable pageable){
+		boolean isFull = full.orElse(false);
+		List<Airport> airports = isFull 
+				? airportService.findAllWithRelationships(pageable)
+//				? airportRepository.findAllWithAddressAndDepartures() --> N*M sor jön vissza, ha N arrival és M departure van
 				: airportRepository.findAll(pageable).getContent();
-//		airports.forEach(a -> a.getAddress().getCity());
-		return withaddress ? airportMapper.airportsToDtos(airports) : airportMapper.airportsToBaseDtos(airports);
+		
+		return isFull 
+				? airportMapper.airportsToDtos(airports)
+				: airportMapper.airportSummariesToDtos(airports);
 	}
 	
 	@GetMapping("/{id}")

@@ -17,20 +17,20 @@ public interface AirportMapper {
 
 	List<AirportDto> airportsToDtos(List<Airport> airports);
 
+	@IterableMapping(qualifiedByName = "summary")
+	List<AirportDto> airportSummariesToDtos(List<Airport> airports);
+
 	AirportDto airportToDto(Airport airport);
 
-	@IterableMapping(qualifiedByName = "base")
-	List<AirportDto> airportsToBaseDtos(List<Airport> airports);
-
-	@Named("base")
-	@Mapping(ignore = true, target = "address")
-	@Mapping(ignore = true, target = "departures")
-	@Mapping(ignore = true, target = "arrivals")
-	AirportDto airportToBaseDto(Airport airport);
+	@Named("summary")
+	@Mapping(target = "address", ignore = true)
+	@Mapping(target = "departures", ignore = true)
+	@Mapping(target = "arrivals", ignore = true)
+	AirportDto airportSummaryToDto(Airport airport);
 
 	Airport dtoToAirport(AirportDto airportDto);
 	
-	@Mapping(ignore = true, target = "takeoff")
-	@Mapping(ignore = true, target = "landing")
+	@Mapping(target = "takeoff", ignore = true)
+	@Mapping(target = "landing", ignore = true)
 	FlightDto flightToDto(Flight flight);
 }

@@ -1,6 +1,5 @@
 package hu.webuni.airport.model;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -39,11 +38,12 @@ public class Airport {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Address address;
 	
-	@OneToMany(mappedBy = "takeoff")
+	@OneToMany(mappedBy = "takeoff"/*, fetch = FetchType.EAGER*/)
+//	@Fetch(FetchMode.SUBSELECT)
 	private Set<Flight> departures;
 
 	@OneToMany(mappedBy = "landing")
-	private List<Flight> arrivals;
+	private Set<Flight> arrivals;
 	
 	public Airport(String name, String iata) {
 		this.name = name;

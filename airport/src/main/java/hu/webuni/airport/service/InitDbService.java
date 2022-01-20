@@ -22,24 +22,31 @@ public class InitDbService {
 	private final AddressRepository addressRepository;
 	private final FlightRepository flightRepository;
 	
+	
 	@Transactional
-	public void deleteAllData() {
+	public void deleteDb() {
 		flightRepository.deleteAll();
-		addressRepository.deleteAll();
 		airportRepository.deleteAll();
+		addressRepository.deleteAll();
 	}
+	
 	
 	@Transactional
 	public void addInitData() {
-		Airport airport1 = airportRepository.save(new Airport("airport1", "BUD"));
-		Airport airport2 = airportRepository.save(new Airport("airport2", "LAX"));
-		Airport airport3 = airportRepository.save(new Airport("airport3", "JFK"));
-		Airport airport4 = airportRepository.save(new Airport("airport4", "LGW"));
 		
-		airport1.setAddress(addressRepository.save(new Address(0, "HU", "Budapest", "XY út 10", "1115")));
-		airport2.setAddress(addressRepository.save(new Address(0, "US", "Los Angeles", "XY street", "1115")));
-		airport3.setAddress(addressRepository.save(new Address(0, "US", "New York", "XY street", "1115")));
-		airport4.setAddress(addressRepository.save(new Address(0, "UK", "London", "XY street", "1115")));
+		Address address1 = addressRepository.save(Address.builder().city("Budapest").build());
+		Address address2 = addressRepository.save(Address.builder().city("Los Angeles").build());
+		Address address3 = addressRepository.save(Address.builder().city("New York").build());
+		Address address4 = addressRepository.save(Address.builder().city("London").build());
+		
+		Airport airport1 = airportRepository.save(new Airport("airport1", "BUD"));
+		airport1.setAddress(address1);
+		Airport airport2 = airportRepository.save(new Airport("airport2", "LAX"));
+		airport2.setAddress(address2);
+		Airport airport3 = airportRepository.save(new Airport("airport3", "JFK"));
+		airport3.setAddress(address3);
+		Airport airport4 = airportRepository.save(new Airport("airport4", "LGW"));
+		airport4.setAddress(address4);
 		
 		flightService.save(new Flight(0, "ABC123", LocalDateTime.of(2022, 6, 10, 10, 10), airport1, airport2));
 		flightService.save(new Flight(0, "ABC456", LocalDateTime.of(2022, 6, 10, 12, 10), airport2, airport3));
