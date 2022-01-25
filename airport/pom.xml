@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+		<shedlock.version>4.32.0</shedlock.version>
 	</properties>
 	<dependencies>
 
@@ -50,6 +51,23 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+			<version>${shedlock.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+			<version>${shedlock.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-spring5-embedded</artifactId>
 		</dependency>
 
 

@@ -2,6 +2,7 @@ package hu.webuni.airport.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,6 +30,9 @@ public class Flight {
 	private String flightNumber;
 	private LocalDateTime takeoffTime;
 
+	@Column(name = "delay")
+	private int delayInSec;
+	
 	@ManyToOne
 	private Airport takeoff;
 	

@@ -4,7 +4,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -26,6 +30,10 @@ public class FlightService {
 	
 	private final AirportRepository airportRepository;
 	private final FlightRepository flightRepository;
+	private final DelayService delayService;
+	
+	private final TaskScheduler taskScheduler;
+	private Map<Long, ScheduledFuture<?>> futuresByFlightId = new ConcurrentHashMap<>();
 	
 	@Transactional
 	public Flight save(Flight flight) {
@@ -94,4 +102,35 @@ public class FlightService {
 		return Lists.newArrayList(flightRepository.findAll(ExpressionUtils.allOf(predicates)));
 	}
 
+//	@Scheduled(cron = "0/30 * * * * *")
+//	@SchedulerLock(name = "updateAllDelays")
+	@Transactional
+//	@Async
+	public void updateAllDelays() {
+		System.out.println("updateAllDelays called");
+		flightRepository.findAll().forEach(f -> f.setDelayInSec(delayService.getDelayForFlight(f.getId())));
+	}
+	
+//	@Scheduled(cron = "20,40 * * * * *")
+//	public void dummy() {
+//		System.out.println("dummy called");
+//	}
+	
+	
+	public void startDelayPolling(long flightId, long period) {
+		ScheduledFuture<?> future = taskScheduler.scheduleWithFixedDelay(()->{
+			int delay = delayService.getDelayForFlight(flightId);
+			Flight flight = flightRepository.findById(flightId).get();
+			flight.setDelayInSec(delay);
+			flightRepository.save(flight);
+		}, period);
+		stopDelayPolling(flightId);
+		futuresByFlightId.put(flightId, future);
+	}
+	
+	public void stopDelayPolling(long flightId) {
+		ScheduledFuture<?> future = futuresByFlightId.get(flightId);
+		if(future != null)
+			future.cancel(false);
+	}
 }
