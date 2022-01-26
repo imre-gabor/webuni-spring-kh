@@ -48,13 +48,13 @@ public class FlightController {
 		return flightMapper.flightsToDtos(flightRepository.findAll(predicate));
 	}
 	
-	@PostMapping("/{id}/pollDelay/{delay}")
-	public void  startPolling(@PathVariable long id, @PathVariable long delay){
-		flightService.startDelayPolling(id, delay);
+	@PostMapping("/{flightId}/pollDelay/{rate}")
+	public void startDelayPolling(@PathVariable long flightId, @PathVariable long rate) {
+		flightService.startDelayPollingForFlight(flightId, rate);
 	}
 	
-	@DeleteMapping("/{id}/pollDelay")
-	public void  stopPolling(@PathVariable long id){
-		flightService.stopDelayPolling(id);
+	@DeleteMapping("/{flightId}/pollDelay")
+	public void startDelayPolling(@PathVariable long flightId) {
+		flightService.stopDelayPollingForFlight(flightId);
 	}
 }

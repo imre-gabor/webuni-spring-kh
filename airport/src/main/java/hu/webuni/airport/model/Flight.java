@@ -39,5 +39,7 @@ public class Flight {
 	@ManyToOne
 	private Airport landing;
 	
+	@Column(name = "delay")
+	private Integer delayInSec;
 	
 }

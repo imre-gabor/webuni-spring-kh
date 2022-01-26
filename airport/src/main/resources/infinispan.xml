@@ -11,13 +11,13 @@
         xmlns="urn:infinispan:config:12.1">
 
 
-   <cache-container name="SpringCacheManager" statistics="false">
-  
-      <local-cache name="pagedAirportsWithRelationships">
-      	 <expiration max-idle="10000" interval="2000"/>
+   <cache-container name="SpringCacheManager">
+
+      <local-cache name="pagedAirportsWithRelationships" >
+         <transaction mode="NONE" />
+         <expiration max-idle="10000" interval="2000"/>
          <memory max-count="10000"/>
       </local-cache>
-
    </cache-container>
 
 </infinispan>

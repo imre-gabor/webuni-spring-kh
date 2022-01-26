@@ -9,11 +9,13 @@ public class DelayService {
 
 	private Random random = new Random();
 	
-	public int getDelayForFlight(long flightId) {
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-		}
+	public int getDelay(long flightId) {
+		System.out.println("getDelay called");
+
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//		}
 		return random.nextInt(0, 1800);
 	}
 }

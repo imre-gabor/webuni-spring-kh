@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
@@ -17,6 +18,7 @@ import com.google.common.collect.Lists;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 
+import hu.webuni.airport.aspect.LogCall;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.model.QFlight;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@LogCall
 public class FlightService {
 	
 	private final AirportRepository airportRepository;
@@ -33,7 +36,8 @@ public class FlightService {
 	private final DelayService delayService;
 	
 	private final TaskScheduler taskScheduler;
-	private Map<Long, ScheduledFuture<?>> futuresByFlightId = new ConcurrentHashMap<>();
+	
+	private Map<Long, ScheduledFuture<?>> delayPollerJobs = new ConcurrentHashMap<>();
 	
 	@Transactional
 	public Flight save(Flight flight) {
@@ -102,35 +106,47 @@ public class FlightService {
 		return Lists.newArrayList(flightRepository.findAll(ExpressionUtils.allOf(predicates)));
 	}
 
-//	@Scheduled(cron = "0/30 * * * * *")
-//	@SchedulerLock(name = "updateAllDelays")
-	@Transactional
+	
+//	@Transactional --> hosszú tranzakció, mert a getDelay lassú
+//	@Scheduled(cron="*/5 * * * * *")
+//	@SchedulerLock(name = "updateDelays")
 //	@Async
-	public void updateAllDelays() {
-		System.out.println("updateAllDelays called");
-		flightRepository.findAll().forEach(f -> f.setDelayInSec(delayService.getDelayForFlight(f.getId())));
+	public void updateDelays() {
+		System.out.println("updateDelays called");
+		flightRepository.findAll().forEach(f -> {
+			updateFlightWithDelay(f);
+		});
+	}
+
+	private void updateFlightWithDelay(Flight f) {
+		f.setDelayInSec(delayService.getDelay(f.getId()));
+		flightRepository.save(f);
 	}
 	
-//	@Scheduled(cron = "20,40 * * * * *")
+	
+	public void startDelayPollingForFlight(long flightId, long rate) {
+		ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleAtFixedRate(() ->{
+			Optional<Flight> flightOptional = flightRepository.findById(flightId);
+			if(flightOptional.isPresent())
+				updateFlightWithDelay(flightOptional.get());
+		}, rate);
+		
+		stopDelayPollingForFlight(flightId);
+		delayPollerJobs.put(flightId, scheduledFuture);
+	}
+	
+	public void stopDelayPollingForFlight(long flightId) {
+		ScheduledFuture<?> scheduledFuture = delayPollerJobs.get(flightId);
+		if(scheduledFuture != null)
+			scheduledFuture.cancel(false);
+	}
+//	
+//	@Scheduled(cron="*/10 * * * * *")
 //	public void dummy() {
+//		try {
+//			Thread.sleep(8000);
+//		} catch (InterruptedException e) {
+//		}
 //		System.out.println("dummy called");
 //	}
-	
-	
-	public void startDelayPolling(long flightId, long period) {
-		ScheduledFuture<?> future = taskScheduler.scheduleWithFixedDelay(()->{
-			int delay = delayService.getDelayForFlight(flightId);
-			Flight flight = flightRepository.findById(flightId).get();
-			flight.setDelayInSec(delay);
-			flightRepository.save(flight);
-		}, period);
-		stopDelayPolling(flightId);
-		futuresByFlightId.put(flightId, future);
-	}
-	
-	public void stopDelayPolling(long flightId) {
-		ScheduledFuture<?> future = futuresByFlightId.get(flightId);
-		if(future != null)
-			future.cancel(false);
-	}
 }
