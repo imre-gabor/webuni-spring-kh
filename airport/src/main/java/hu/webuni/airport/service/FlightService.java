@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -26,7 +25,6 @@ import hu.webuni.airport.model.QFlight;
 import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.repository.FlightRepository;
 import lombok.RequiredArgsConstructor;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 @RequiredArgsConstructor
 @Service
@@ -110,8 +108,8 @@ public class FlightService {
 
 	
 //	@Transactional --> hosszú tranzakció, mert a getDelay lassú
-	@Scheduled(cron="*/5 * * * * *")
-	@SchedulerLock(name = "updateDelays")
+//	@Scheduled(cron="*/5 * * * * *")
+//	@SchedulerLock(name = "updateDelays")
 //	@Async
 	public void updateDelays() {
 		System.out.println("updateDelays called");
