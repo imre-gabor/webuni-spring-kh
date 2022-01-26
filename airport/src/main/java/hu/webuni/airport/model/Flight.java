@@ -30,9 +30,6 @@ public class Flight {
 	private String flightNumber;
 	private LocalDateTime takeoffTime;
 
-	@Column(name = "delay")
-	private int delayInSec;
-	
 	@ManyToOne
 	private Airport takeoff;
 	
