@@ -4,12 +4,20 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.DefaultRevisionEntity;
+import org.hibernate.envers.RevisionType;
+import org.hibernate.envers.query.AuditEntity;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.webuni.airport.model.Airport;
+import hu.webuni.airport.model.HistoryData;
 import hu.webuni.airport.repository.AirportRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +26,9 @@ import lombok.RequiredArgsConstructor;
 public class AirportService {
 
 	private final AirportRepository airportRepository;
+	
+	@PersistenceContext
+	private EntityManager em;
 
 	@Transactional
 	public Airport save(Airport airport) {
@@ -71,6 +82,35 @@ public class AirportService {
 		airports = airportRepository.findByIdWithArrivals(airportIds);
 		airports = airportRepository.findByIdWithDepartures(airportIds);
 		return airports;
+	}
+	
+	@Transactional
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public List<HistoryData<Airport>> getAirportHistory(long id){
+		
+		List resultList = AuditReaderFactory.get(em)
+		.createQuery()
+		.forRevisionsOfEntity(Airport.class, false, true)
+		.add(AuditEntity.property("id").eq(id))
+		.getResultList()
+		.stream()
+		.map(o ->{
+			Object[] objArray = (Object[])o;
+			DefaultRevisionEntity revisionEntity = (DefaultRevisionEntity)objArray[1];
+			Airport airport = (Airport)objArray[0];
+			airport.getAddress().getCity();
+			airport.getArrivals().size();
+			airport.getDepartures().size();
+			
+			return new HistoryData<Airport>(
+				airport,
+				(RevisionType)objArray[2],
+				revisionEntity.getId(),
+				revisionEntity.getRevisionDate()
+			);
+		}).toList();
+		
+		return resultList;
 	}
 	
 }
