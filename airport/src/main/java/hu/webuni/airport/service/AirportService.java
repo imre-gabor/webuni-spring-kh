@@ -85,27 +85,30 @@ public class AirportService {
 	}
 	
 	@Transactional
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public List<HistoryData<Airport>> getAirportHistory(long id){
-		List<HistoryData<Airport>> resultList = AuditReaderFactory
-		.get(em)
+		
+		List resultList = AuditReaderFactory.get(em)
 		.createQuery()
 		.forRevisionsOfEntity(Airport.class, false, true)
 		.add(AuditEntity.property("id").eq(id))
-		.getResultList().stream()
-			.map(o -> {
+		.getResultList()
+		.stream()
+		.map(o ->{
 			Object[] objArray = (Object[])o;
+			DefaultRevisionEntity revisionEntity = (DefaultRevisionEntity)objArray[1];
 			Airport airport = (Airport)objArray[0];
 			airport.getAddress().getCity();
 			airport.getArrivals().size();
 			airport.getDepartures().size();
+			
 			return new HistoryData<Airport>(
-					airport, 
-					(RevisionType)objArray[2], 
-					((DefaultRevisionEntity)objArray[1]).getId(),
-					((DefaultRevisionEntity)objArray[1]).getRevisionDate());
+				airport,
+				(RevisionType)objArray[2],
+				revisionEntity.getId(),
+				revisionEntity.getRevisionDate()
+			);
 		}).toList();
-		
 		
 		return resultList;
 	}

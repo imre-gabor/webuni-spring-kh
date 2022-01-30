@@ -33,6 +33,13 @@ public class InitDbService {
 		airportRepository.deleteAll();
 		addressRepository.deleteAll();
 	}
+
+	@Transactional
+	public void deleteAudTables() {
+		jdbcTemplate.update("DELETE FROM address_aud");
+		jdbcTemplate.update("DELETE FROM airport_aud");
+		jdbcTemplate.update("DELETE FROM flight_aud");
+	}
 	
 	@Transactional
 	public void deleteAuditData() {

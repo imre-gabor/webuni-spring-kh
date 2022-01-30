@@ -64,15 +64,20 @@ public class AirportController {
 	}
 	
 	@GetMapping("/{id}/history")
-	public List<HistoryData<AirportDto>> getHistory(@PathVariable long id) {
+	public List<HistoryData<AirportDto>> getHistoryById(@PathVariable long id) {
 		List<HistoryData<Airport>> airports = airportService.getAirportHistory(id);
 		
-		ArrayList<HistoryData<AirportDto>> airportDtosWithHistory = new ArrayList<>();
+		List<HistoryData<AirportDto>> airportDtosWithHistory = new ArrayList<>();
 		
 		airports.forEach(hd ->{
-			airportDtosWithHistory.add(new HistoryData<AirportDto>(airportMapper.airportToDto(hd.getData()), 
-					hd.getRevType(), hd.getRevision(), hd.getDate()));
+			airportDtosWithHistory.add(new HistoryData<>(
+					airportMapper.airportToDto(hd.getData()),
+					hd.getRevType(),
+					hd.getRevision(),
+					hd.getDate()
+					));
 		});
+		
 		return airportDtosWithHistory;
 	}
 	
@@ -99,5 +104,4 @@ public class AirportController {
 	public void deleteAirport(@PathVariable long id) {
 		airportService.delete(id);
 	}
-	
 }
