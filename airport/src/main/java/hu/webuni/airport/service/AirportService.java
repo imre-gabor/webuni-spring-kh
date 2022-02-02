@@ -16,9 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hu.webuni.airport.model.Address;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.model.HistoryData;
+import hu.webuni.airport.model.Image;
 import hu.webuni.airport.repository.AirportRepository;
+import hu.webuni.airport.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class AirportService {
 
 	private final AirportRepository airportRepository;
+
+	private final ImageRepository imageRepository;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -98,7 +103,9 @@ public class AirportService {
 			Object[] objArray = (Object[])o;
 			DefaultRevisionEntity revisionEntity = (DefaultRevisionEntity)objArray[1];
 			Airport airport = (Airport)objArray[0];
-			airport.getAddress().getCity();
+			Address address = airport.getAddress();
+			if(address != null)
+				address.getCity();
 			airport.getArrivals().size();
 			airport.getDepartures().size();
 			
@@ -111,6 +118,16 @@ public class AirportService {
 		}).toList();
 		
 		return resultList;
+	}
+
+	@Transactional
+	public Image saveImageForAirport(long airportId, String fileName, byte[] bytes) {
+		Airport airport = airportRepository.findById(airportId).get();
+		Image image = new Image();
+		image.setBytes(bytes);
+		image = imageRepository.save(image);
+		airport.getImages().add(image);
+		return image;
 	}
 	
 }

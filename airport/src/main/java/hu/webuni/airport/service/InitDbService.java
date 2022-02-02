@@ -13,6 +13,7 @@ import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.repository.AddressRepository;
 import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.repository.FlightRepository;
+import hu.webuni.airport.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -24,11 +25,12 @@ public class InitDbService {
 	private final AddressRepository addressRepository;
 	private final FlightRepository flightRepository;
 	private final JdbcTemplate jdbcTemplate;
-	
+	private final ImageRepository imageRepository;
 	
 	@Transactional
 	@LogCall
 	public void deleteDb() {
+	
 		flightRepository.deleteAll();
 		airportRepository.deleteAll();
 		addressRepository.deleteAll();
