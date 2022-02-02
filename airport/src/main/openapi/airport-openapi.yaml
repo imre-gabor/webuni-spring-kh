@@ -287,7 +287,7 @@ paths:
         '200':
           description: OK
           content:
-            image/*:
+            image/jpeg:
               schema: 
                 type: string
                 format: binary
