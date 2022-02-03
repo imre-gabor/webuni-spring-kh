@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import hu.webuni.airport.model.Address;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.model.HistoryData;
+import hu.webuni.airport.model.Image;
 import hu.webuni.airport.repository.AirportRepository;
+import hu.webuni.airport.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class AirportService {
 
 	private final AirportRepository airportRepository;
+	private final ImageRepository imageRepository;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -114,6 +117,18 @@ public class AirportService {
 		}).toList();
 		
 		return resultList;
+	}
+	
+	@Transactional
+	public Image saveImageForAirport(long airportId, String fileName, byte[] bytes) {
+		Airport airport = airportRepository.findById(airportId).get();
+		Image image = Image.builder()
+			.data(bytes)
+			.fileName(fileName)
+			.build();
+		image = imageRepository.save(image);
+		airport.getImages().add(image);
+		return image;
 	}
 	
 }
