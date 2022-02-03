@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +21,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Builder
 @Audited
 public class Image {
 
 	@Id
 	@GeneratedValue
 	private long id;
+	private String fileName;
 	
 	@Lob
 	@Type(type = "org.hibernate.type.BinaryType")
-	private byte[] bytes;
+	private byte[] data;
+	
 }

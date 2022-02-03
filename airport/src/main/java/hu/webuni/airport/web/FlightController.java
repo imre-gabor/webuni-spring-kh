@@ -2,6 +2,7 @@ package hu.webuni.airport.web;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -27,67 +28,65 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class FlightController implements FlightControllerApi{
-
+	
+	private final NativeWebRequest nativeWebRequest;
 	private final FlightService flightService;
 	private final FlightRepository flightRepository;
 	private final FlightMapper flightMapper;
+	private final QuerydslPredicateArgumentResolver prediacateResolver;
 	
-	private final QuerydslPredicateArgumentResolver predicateResolver;
-	private final NativeWebRequest request;
-	
-	
+	@Override
+	public Optional<NativeWebRequest> getRequest() {
+		return Optional.of(nativeWebRequest);
+	}
+
 	@Override
 	public ResponseEntity<FlightDto> createFlight(@Valid FlightDto flightDto) {
 		Flight flight = flightService.save(flightMapper.dtoToFlight(flightDto));
 		return ResponseEntity.ok(flightMapper.flightToDto(flight));
 	}
+
 	@Override
 	public ResponseEntity<List<FlightDto>> searchFlights(@Valid FlightDto example) {
 		return ResponseEntity.ok(flightMapper.flightsToDtos(flightService.findFlightsByExample(flightMapper.dtoToFlight(example))));
 	}
-	
-	
 
 	@Override
 	public ResponseEntity<Void> startDelayPolling(Long flightId, Long rate) {
 		flightService.startDelayPollingForFlight(flightId, rate);
 		return ResponseEntity.ok().build();
 	}
+
 	@Override
 	public ResponseEntity<Void> stopDelayPolling(Long flightId) {
 		flightService.stopDelayPollingForFlight(flightId);
 		return ResponseEntity.ok().build();
 	}
-	
-	
-	@Override
-	public ResponseEntity<List<FlightDto>> searchFlights2(@Valid Integer id, @Valid String flightNumber,
-			@Valid List<String> takeoffTime, @Valid String takeoffIata) {
-		
-		Predicate predicate = extractPredicate("configurePredicate");
-		return ResponseEntity.ok(flightMapper.flightsToDtos(flightRepository.findAll(predicate)));
-	}
-	
+
 	public void configurePredicate(@QuerydslPredicate(root = Flight.class) Predicate predicate) {}
 	
-	private Predicate extractPredicate(String predicateConfigurerMethodName) {
-		Method method = null;
+	@Override
+	public ResponseEntity<List<FlightDto>> searchFlights2(@Valid Long id, @Valid String flightNumber,
+			@Valid String takeoffIata, @Valid List<String> takeoffTime) {
+
+		Predicate predicate = createPredicate("configurePredicate");
+		return ResponseEntity.ok(flightMapper.flightsToDtos(flightRepository.findAll(predicate)));
+	}
+
+	private Predicate createPredicate(String configMethodName) {
+		Method method;
 		try {
-			method = this.getClass().getMethod(predicateConfigurerMethodName, Predicate.class);
-		} catch (NoSuchMethodException | SecurityException e) {
+			method = this.getClass().getMethod(configMethodName, Predicate.class);
+			MethodParameter methodParameter = new MethodParameter(method, 0);
+			ModelAndViewContainer mavContainer = null;
+			WebDataBinderFactory binderFactory = null;
+			return (Predicate) prediacateResolver.resolveArgument(methodParameter, mavContainer, nativeWebRequest, binderFactory);
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		MethodParameter parameter = new MethodParameter(method, 0);
-		ModelAndViewContainer mavContainer = null;
-		WebDataBinderFactory webDataBinderFactory = null;
-		
-		try {
-			return (Predicate) predicateResolver.resolveArgument(parameter, mavContainer, request, webDataBinderFactory);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
+
 	
-	
+
 }

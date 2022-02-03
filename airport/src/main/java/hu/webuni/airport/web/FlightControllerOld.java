@@ -53,7 +53,7 @@ public class FlightControllerOld {
 	}
 	
 	@DeleteMapping("/{flightId}/pollDelay")
-	public void stopDelayPolling(@PathVariable long flightId) {
+	public void startDelayPolling(@PathVariable long flightId) {
 		flightService.stopDelayPollingForFlight(flightId);
 	}
 }

@@ -8,6 +8,8 @@ import hu.webuni.airport.model.HistoryData;
 
 @Mapper(componentModel = "spring")
 public interface HistoryDataMapper {
+
+	HistoryDataAirportDto airportHistoryDataToDto(HistoryData<Airport> hd);
+
 	
-	public HistoryDataAirportDto historyDataOfAirportToDto(HistoryData<Airport> hd);
 }

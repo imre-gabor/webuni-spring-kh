@@ -28,7 +28,7 @@ public class AirportControllerIT {
 		List<AirportDto> airportsBefore = getAllAirports();
 		
 		AirportDto newAirport = new AirportDto()
-				.id(5l)
+				.id(5L)
 				.name("faasffgaf")
 				.iata("IGH");
 		

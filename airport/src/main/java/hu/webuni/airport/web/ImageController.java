@@ -12,14 +12,18 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class ImageController implements ImageControllerApi {
-	
+
 	private final ImageRepository imageRepository;
-	
+
 	@Override
-	public ResponseEntity<Resource> getImage(Long id) {
+	public ResponseEntity<Resource> downloadImage(Long id) {
 		return ResponseEntity.ok(
-			new ByteArrayResource(imageRepository.findById(id).get().getBytes())
-		);
+				new ByteArrayResource(
+						imageRepository.findById(id).get().getData()
+						)
+				);
 	}
+	
+	
 	
 }

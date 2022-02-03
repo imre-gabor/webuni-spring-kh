@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class AirportService {
 
 	private final AirportRepository airportRepository;
-
 	private final ImageRepository imageRepository;
 	
 	@PersistenceContext
@@ -104,7 +103,7 @@ public class AirportService {
 			DefaultRevisionEntity revisionEntity = (DefaultRevisionEntity)objArray[1];
 			Airport airport = (Airport)objArray[0];
 			Address address = airport.getAddress();
-			if(address != null)
+			if(address != null) 
 				address.getCity();
 			airport.getArrivals().size();
 			airport.getDepartures().size();
@@ -119,12 +118,14 @@ public class AirportService {
 		
 		return resultList;
 	}
-
+	
 	@Transactional
 	public Image saveImageForAirport(long airportId, String fileName, byte[] bytes) {
 		Airport airport = airportRepository.findById(airportId).get();
-		Image image = new Image();
-		image.setBytes(bytes);
+		Image image = Image.builder()
+			.data(bytes)
+			.fileName(fileName)
+			.build();
 		image = imageRepository.save(image);
 		airport.getImages().add(image);
 		return image;

@@ -20,8 +20,8 @@ public interface FlightMapper {
 
 	List<FlightDto> flightsToDtos(Iterable<Flight> findAll);
 
-	@Mapping(ignore = true, target = "address")
-	@Mapping(ignore = true, target = "departures")
-	@Mapping(ignore = true, target = "arrivals")
-	AirportDto airportToDto(Airport airport);
+	@Mapping(target = "address", ignore = true)
+	@Mapping(target = "departures", ignore = true)
+	@Mapping(target = "arrivals", ignore = true)
+	AirportDto airportSummaryToDto(Airport airport);
 }

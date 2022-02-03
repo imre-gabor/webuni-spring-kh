@@ -11,7 +11,6 @@ import javax.validation.Valid;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -38,51 +37,20 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class AirportController implements AirportControllerApi {
-
+	
+	private final NativeWebRequest nativeWebRequest;
 	private final AirportService airportService;
 	private final AirportRepository airportRepository;
+	
 	private final AirportMapper airportMapper;
 	private final HistoryDataMapper historyDataMapper;
-	private final NativeWebRequest request;
-	
 	private final PageableHandlerMethodArgumentResolver pageableResolver;
-
-	public void pageableConfig(@SortDefault(direction = Direction.DESC, sort = "id") Pageable pageable) {}
 	
 	@Override
-	public ResponseEntity<List<AirportDto>> getAll(@Valid Boolean full, @Valid Integer page, @Valid Integer size,
-			@Valid List<String> sort) {
-		
-		Pageable pageable = extractPageable("pageableConfig");
-		boolean isFull = full == null ? false : full;
-		List<Airport> airports = isFull 
-				? airportService.findAllWithRelationships(pageable)
-//				? airportRepository.findAllWithAddressAndDepartures() --> N*M sor jön vissza, ha N arrival és M departure van
-				: airportRepository.findAll(pageable).getContent();
-		
-		List<AirportDto> resultList = isFull 
-				? airportMapper.airportsToDtos(airports)
-				: airportMapper.airportSummariesToDtos(airports);
-		return ResponseEntity.ok(resultList);
+	public Optional<NativeWebRequest> getRequest() {
+		return Optional.of(nativeWebRequest);
 	}
 
-	private Pageable extractPageable(String pageableConfiguringMethodName) {
-		Method methodWithPageable = null;
-		try {
-			methodWithPageable = this.getClass().getMethod(pageableConfiguringMethodName, Pageable.class);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		
-		MethodParameter methodParameter = new MethodParameter(methodWithPageable, 0);
-		ModelAndViewContainer mavContainer = null;
-		WebDataBinderFactory webDataBinderFactory = null;
-		Pageable pageable = pageableResolver.resolveArgument(methodParameter, mavContainer, request, webDataBinderFactory);
-		return pageable;
-	}
-	
-	
 	@Override
 	public ResponseEntity<AirportDto> createAirport(@Valid AirportDto airportDto) {
 		Airport airport = airportService.save(airportMapper.dtoToAirport(airportDto));
@@ -105,12 +73,13 @@ public class AirportController implements AirportControllerApi {
 
 	@Override
 	public ResponseEntity<List<HistoryDataAirportDto>> getHistoryById(Long id) {
+		
 		List<HistoryData<Airport>> airports = airportService.getAirportHistory(id);
 		
 		List<HistoryDataAirportDto> airportDtosWithHistory = new ArrayList<>();
 		
 		airports.forEach(hd ->{
-			airportDtosWithHistory.add(historyDataMapper.historyDataOfAirportToDto(hd));
+			airportDtosWithHistory.add(historyDataMapper.airportHistoryDataToDto(hd));
 		});
 		
 		return ResponseEntity.ok(airportDtosWithHistory);
@@ -128,24 +97,57 @@ public class AirportController implements AirportControllerApi {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
-	
 
+	public void configPageable(@SortDefault("id") Pageable pageable) {}
+	
 	@Override
-	public Optional<NativeWebRequest> getRequest() {
-		return Optional.of(request);
+	public ResponseEntity<List<AirportDto>> getAll(@Valid Boolean full, @Valid Integer page, @Valid Integer size,
+			@Valid List<String> sort) {
+		
+		boolean isFull = full == null ? false : full;
+		
+		Pageable pageable = createPageable("configPageable");
+		
+		List<Airport> airports = isFull 
+				? airportService.findAllWithRelationships(pageable)
+//				? airportRepository.findAllWithAddressAndDepartures() --> N*M sor jön vissza, ha N arrival és M departure van
+				: airportRepository.findAll(pageable).getContent();
+		
+		List<AirportDto> resultList = isFull 
+				? airportMapper.airportsToDtos(airports)
+				: airportMapper.airportSummariesToDtos(airports);
+		return ResponseEntity.ok(resultList);
+	}
+
+	private Pageable createPageable(String pageableConfigurerMethodName) {
+		Method method;
+		try {
+			method = this.getClass().getMethod(pageableConfigurerMethodName, Pageable.class);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		MethodParameter methodParameter = new MethodParameter(method, 0);
+		ModelAndViewContainer mavContainer = null;
+		WebDataBinderFactory binderFactory = null;
+		Pageable pageable = pageableResolver.resolveArgument(methodParameter, mavContainer, nativeWebRequest, binderFactory);
+		return pageable;
 	}
 
 	@Override
-	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName, @Valid MultipartFile content) {
+	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName,
+			@Valid MultipartFile content) {
+		Image image;
 		try {
-			Image image = airportService.saveImageForAirport(id, fileName, content.getBytes());
+			image = airportService.saveImageForAirport(id, fileName, content.getBytes());
 			return ResponseEntity.ok("/api/images/" + image.getId());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
-	
-	
 
+	
+	
+	
 }

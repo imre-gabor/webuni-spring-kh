@@ -110,6 +110,7 @@ paths:
       parameters:
         - schema:
             type: integer
+            format: int64
           in: query
           name: id
         - schema:
@@ -117,15 +118,15 @@ paths:
           in: query
           name: flightNumber
         - schema:
+            type: string
+          in: query
+          name: takeoff.iata
+        - schema:
             type: array
             items:
               type: string
           in: query
           name: takeoffTime
-        - schema:
-            type: string
-          in: query
-          name: takeoff.iata
       responses:
         '200':
           description: OK
@@ -135,6 +136,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FlightDto'
+      description: ''
     post:
       tags:
         - flight-controller
@@ -162,12 +164,13 @@ paths:
       parameters:
         - name: full
           in: query
+          required: false
           schema:
             type: boolean
-        - name: page
-          in: query
-          schema:
+        - schema:
             type: integer
+          in: query
+          name: page
         - schema:
             type: integer
           in: query
@@ -178,6 +181,7 @@ paths:
               type: string
           in: query
           name: sort
+          description: ''
       responses:
         '200':
           description: OK
@@ -280,18 +284,18 @@ paths:
         in: path
         required: true
     get:
+      summary: Your GET endpoint
       tags:
         - image-controller
-      summary: get image content
       responses:
         '200':
           description: OK
           content:
             image/jpeg:
-              schema: 
+              schema:
                 type: string
                 format: binary
-      operationId: getImage
+      operationId: downloadImage
 components:
   schemas:
     AddressDto:
@@ -348,8 +352,6 @@ components:
           $ref: '#/components/schemas/AirportDto'
         landing:
           $ref: '#/components/schemas/AirportDto'
-    Predicate:
-      type: object
     HistoryDataAirportDto:
       type: object
       properties:
