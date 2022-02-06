@@ -84,7 +84,11 @@ public class AirportService {
 		List<Long> airportIds = airports.stream().map(Airport::getId).toList();
 		
 		airports = airportRepository.findByIdWithArrivals(airportIds);
-		airports = airportRepository.findByIdWithDepartures(airportIds);
+		
+		//a videóban ez a sor még a pageable.getSort() nélkül szerepel, hibásan
+		//ha nem adnánk át a pageable-ben meghatározott rendezést, a kért helyett nem-definiált sorrendben
+		//adnánk vissza a lapra eső entitásokat
+		airports = airportRepository.findByIdWithDepartures(airportIds, pageable.getSort());
 		return airports;
 	}
 	
