@@ -1,7 +1,6 @@
 package hu.webuni.airport.web;
 
 import java.lang.reflect.Method;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.querydsl.QuerydslPredicateArgumentResolver;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -25,7 +23,6 @@ import hu.webuni.airport.mapper.FlightMapper;
 import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.repository.FlightRepository;
 import hu.webuni.airport.service.FlightService;
-import hu.webuni.airport.ws.DelayMessage;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +34,6 @@ public class FlightController implements FlightControllerApi{
 	private final FlightRepository flightRepository;
 	private final FlightMapper flightMapper;
 	private final QuerydslPredicateArgumentResolver prediacateResolver;
-	private final SimpMessagingTemplate messagingTemplate;
 
 	
 	@Override
@@ -91,14 +87,4 @@ public class FlightController implements FlightControllerApi{
 			throw new RuntimeException(e);
 		}
 	}
-
-	@Override
-	public ResponseEntity<Void> reportDelay(Long id, Integer delay) {
-		this.messagingTemplate.convertAndSend("/topic/delay/" + id, 
-				new DelayMessage(delay, OffsetDateTime.now()));
-		return ResponseEntity.ok().build();
-	}
-
-	
-
 }
