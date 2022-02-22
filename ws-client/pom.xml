@@ -35,6 +35,7 @@
 					<wsdlUrls>
 						<wsdlUrl>http://localhost:8080/services/airport?wsdl</wsdlUrl>
 					</wsdlUrls>
+					<bindingDirectory>${basedir}/wsdl</bindingDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
