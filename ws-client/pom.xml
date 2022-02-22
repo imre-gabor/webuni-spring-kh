@@ -10,7 +10,6 @@
 		<maven.compiler.source>17</maven.compiler.source>
 	</properties>
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-rt -->
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
