@@ -50,7 +50,7 @@ export class FlightListComponent implements OnInit {
           const delayData = JSON.parse(message.body);
           this.flights.forEach(flight =>{
             if(flight.id == flightId){
-              flight.delay = delayData.delayInMinutes;
+              flight.delay = delayData.delay;
             }
           });
         }

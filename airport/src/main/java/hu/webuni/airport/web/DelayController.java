@@ -13,13 +13,14 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class DelayController {
-	
-	private final DelayService delayService;
 
+	private final DelayService delayService;
+	
 	@GetMapping("/api/flights/{id}/delay")
 	@Async
-	public CompletableFuture<Integer> getDelayForFlight(@PathVariable Long id) {
-		System.out.println("getDelayForFlight endpoint called at thread " + Thread.currentThread().getName());
+	public CompletableFuture<Integer> getDelayForFlight(@PathVariable long id) {
+		System.out.println("DelayService.getDelayForFlight called at thread " + Thread.currentThread().getName());
+
 		return CompletableFuture.completedFuture(delayService.getDelay(id));
 	}
 }

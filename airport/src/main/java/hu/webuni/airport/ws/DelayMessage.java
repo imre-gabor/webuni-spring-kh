@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class DelayMessage {
 
-	private int delayInMinutes;
+	private int delay;
 	private OffsetDateTime timestamp;
 }

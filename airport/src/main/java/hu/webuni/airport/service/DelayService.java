@@ -10,7 +10,7 @@ public class DelayService {
 	private Random random = new Random();
 	
 	public int getDelay(long flightId) {
-		System.out.println("DelayService.getDelay called on thread "  + Thread.currentThread().getName());
+		System.out.println("DelayService.getDelay called at thread " + Thread.currentThread().getName());
 
 		try {
 			Thread.sleep(5000);
