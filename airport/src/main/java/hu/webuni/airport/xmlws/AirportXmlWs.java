@@ -10,9 +10,8 @@ import hu.webuni.airport.api.model.HistoryDataAirportDto;
 @WebService
 public interface AirportXmlWs {
 
-	public List<HistoryDataAirportDto> getHistoryById(Long id);
-
+	public List<HistoryDataAirportDto> getHistoryById(Long id); 
+	
 	@ResponseWrapper(localName = "getFlightDelayResponse", className = "java.lang.Integer")
 	public int getFlightDelay(long flightId);
-
 }

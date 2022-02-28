@@ -13,8 +13,8 @@ import hu.webuni.airport.model.HistoryData;
 public interface HistoryDataMapper {
 
 	HistoryDataAirportDto airportHistoryDataToDto(HistoryData<Airport> hd);
-	
-	@Mapping(target="takeoff", ignore=true)
-	@Mapping(target="landing", ignore=true)
+
+	@Mapping(ignore = true, target = "takeoff")
+	@Mapping(ignore = true, target = "landing")
 	FlightDto flightToDto(Flight flight);
 }

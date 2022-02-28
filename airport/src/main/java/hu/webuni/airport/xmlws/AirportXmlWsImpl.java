@@ -23,20 +23,21 @@ import lombok.RequiredArgsConstructor;
 public class AirportXmlWsImpl implements AirportXmlWs {
 	
 	private final AirportService airportService;
+	
 	private final HistoryDataMapper historyDataMapper;
+	
 	private final DelayService delayService;
 
 	@Override
 	public List<HistoryDataAirportDto> getHistoryById(Long id) {
-		
 		List<HistoryData<Airport>> airports = airportService.getAirportHistory(id);
-		
+
 		List<HistoryDataAirportDto> airportDtosWithHistory = new ArrayList<>();
-		
-		airports.forEach(hd ->{
+
+		airports.forEach(hd -> {
 			airportDtosWithHistory.add(historyDataMapper.airportHistoryDataToDto(hd));
 		});
-		
+
 		return airportDtosWithHistory;
 	}
 
@@ -45,16 +46,18 @@ public class AirportXmlWsImpl implements AirportXmlWs {
 	public int getFlightDelay(long flightId) {
 		return 0;
 	}
-
+	
 	public Future<Integer> getFlightDelayAsync(long flightId, AsyncHandler<Integer> asyncHandler){
 		ServerAsyncResponse<Integer> serverAsyncResponse = new ServerAsyncResponse<>();
 		System.out.println(Thread.currentThread().getName());
-		delayService.getDelayAsync(flightId)
-			.thenAccept(result -> {
-				System.out.println(Thread.currentThread().getName());
-				serverAsyncResponse.set(result);
-				asyncHandler.handleResponse(serverAsyncResponse);
-			});
+		
+		delayService.getDelayAsync(flightId).thenAccept(result ->{
+			System.out.println(Thread.currentThread().getName());
+			serverAsyncResponse.set(result);
+			asyncHandler.handleResponse(serverAsyncResponse);
+		});
+		
 		return serverAsyncResponse;
 	}
+
 }

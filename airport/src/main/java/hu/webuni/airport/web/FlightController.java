@@ -38,9 +38,10 @@ public class FlightController implements FlightControllerApi{
 	private final FlightRepository flightRepository;
 	private final FlightMapper flightMapper;
 	private final QuerydslPredicateArgumentResolver prediacateResolver;
-	private final JmsTemplate jmsTemplate;
 	
 	private final SimpMessagingTemplate messagingTemplate;
+	private final JmsTemplate jmsTemplate;
+	
 	
 	@Override
 	public Optional<NativeWebRequest> getRequest() {
@@ -96,9 +97,11 @@ public class FlightController implements FlightControllerApi{
 
 	@Override
 	public ResponseEntity<Void> reportDelay(Long id, Integer delay) {
-		DelayMessage delayMessage = new DelayMessage(delay, OffsetDateTime.now(), id);
-		this.messagingTemplate.convertAndSend("/topic/delay/" + id, delayMessage);
-		jmsTemplate.convertAndSend("delay", delayMessage);
+		DelayMessage payload = new DelayMessage(delay, OffsetDateTime.now(), id);
+		this.messagingTemplate.convertAndSend("/topic/delay/" + id, payload);
+		
+		this.jmsTemplate.convertAndSend("delays", payload);
+		
 		return ResponseEntity.ok().build();
 	}
 

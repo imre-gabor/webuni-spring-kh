@@ -20,13 +20,12 @@ public class JmsConfig {
 		converter.setTypeIdPropertyName("_type");
 		return converter;
 	}
-
+	
 	@Bean
 	public BrokerService broker() throws Exception {
-		BrokerService broker = new BrokerService();
-		broker.addConnector("tcp://localhost:9999");
-//        broker.setPersistent(false);
-		return broker;
+		BrokerService brokerService = new BrokerService();
+		brokerService.addConnector("tcp://localhost:9999");
+//		brokerService.setPersistent(false);
+		return brokerService;
 	}
-
 }
