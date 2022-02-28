@@ -4,6 +4,7 @@ import { FlightService } from '../services/flight.service';
 import { Stomp } from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subscriber } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-flight-list',
@@ -16,7 +17,8 @@ export class FlightListComponent implements OnInit {
   stompClient;
 
   constructor(
-    private flightService: FlightService
+    private flightService: FlightService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -39,7 +41,7 @@ export class FlightListComponent implements OnInit {
     //Korábbi héten a proxy.conf.json-ből hiányzott, hogy "ws": true, így akkor még az emulált mód ment. Most már valódi websocket.   
     this.stompClient = Stomp.over(ws);
     
-    this.stompClient.connect({}, frame => {   
+    this.stompClient.connect({'X-Authorization' : 'Bearer ' + this.authService.getToken()}, frame => {   
       console.log('Connected: ' + frame);
       this.flights.forEach(flight => this.subscribeToDelays(flight.id) );
     });
