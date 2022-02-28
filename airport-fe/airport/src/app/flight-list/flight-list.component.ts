@@ -34,9 +34,11 @@ export class FlightListComponent implements OnInit {
   } 
 
   connect() {
-    const ws = new SockJS('api/stomp');
+    const ws = new SockJS('api/stomp'); 
+    //A sockjs előbb natív websockettel próbálkozik, ha az nem sikerül, akkor áttér HTTP fölötti emulációra
+    //Korábbi héten a proxy.conf.json-ből hiányzott, hogy "ws": true, így akkor még az emulált mód ment. Most már valódi websocket.   
     this.stompClient = Stomp.over(ws);
-    let that = this;
+    
     this.stompClient.connect({}, frame => {   
       console.log('Connected: ' + frame);
       this.flights.forEach(flight => this.subscribeToDelays(flight.id) );
