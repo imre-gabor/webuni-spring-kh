@@ -1,19 +1,23 @@
 package hu.webuni.airport.service;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.webuni.airport.aspect.LogCall;
 import hu.webuni.airport.model.Address;
 import hu.webuni.airport.model.Airport;
+import hu.webuni.airport.model.AirportUser;
 import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.repository.AddressRepository;
 import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.repository.FlightRepository;
 import hu.webuni.airport.repository.ImageRepository;
+import hu.webuni.airport.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -26,7 +30,9 @@ public class InitDbService {
 	private final FlightRepository flightRepository;
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageRepository imageRepository;
-	
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+
 	@Transactional
 	@LogCall
 	public void deleteDb() {
@@ -72,5 +78,18 @@ public class InitDbService {
 		flightService.save(new Flight(0, "ABC456", LocalDateTime.of(2022, 6, 10, 12, 10), airport2, airport3, null));
 		flightService.save(new Flight(0, "DEF234", LocalDateTime.of(2022, 6, 12, 14, 10), airport2, airport4, null));
 		flightService.save(new Flight(0, "GHI345", LocalDateTime.of(2022, 6, 13, 16, 10), airport4, airport1, null));
+	
+		createUsersIfNeeded();
+	}
+	
+	@Transactional
+	public void createUsersIfNeeded() {
+		if(!userRepository.existsById("admin")) {
+			userRepository.save(new AirportUser("admin", passwordEncoder.encode("pass"), Set.of("admin", "user")));
+		}
+		
+		if(!userRepository.existsById("user")) {
+			userRepository.save(new AirportUser("user", passwordEncoder.encode("pass"), Set.of("user")));
+		}
 	}
 }
