@@ -12,8 +12,18 @@ public class AirportUser {
 
 	@Id
 	private String username;
-	private String password; 
+	private String password;
 	
+	private String facebookId;
+	
+	public String getFacebookId() {
+		return facebookId;
+	}
+
+	public void setFacebookId(String facebookId) {
+		this.facebookId = facebookId;
+	}
+
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> roles;
 	
