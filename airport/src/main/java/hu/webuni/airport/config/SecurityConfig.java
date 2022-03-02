@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,14 +51,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //			.httpBasic()
 //			.and()
 			.csrf().disable()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
+//			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//			.and()
 			.authorizeRequests()
+			.antMatchers("/oauth2/**").permitAll()
+			.antMatchers("/fbLoginSuccess").permitAll()
 			.antMatchers("/api/login/**").permitAll()
 			.antMatchers("/api/stomp/**").permitAll()
 			.antMatchers(HttpMethod.POST, "/api/airports/**").hasAuthority("admin")
 			.antMatchers(HttpMethod.PUT, "/api/airports/**").hasAnyAuthority("user", "admin")
-			.anyRequest().authenticated();
+			.anyRequest().authenticated()
+			.and()
+			.oauth2Login()
+			.defaultSuccessUrl("/fbLoginSuccess", true)
+			;
 		
 		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 	}
