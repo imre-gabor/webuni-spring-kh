@@ -9,7 +9,7 @@
     <version>2.6.4</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
-  <groupId>hu.bme.aut.szoftlab</groupId>
+  <groupId>hu.webuni</groupId>
   <artifactId>bonus-api</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>bonus-api</name>

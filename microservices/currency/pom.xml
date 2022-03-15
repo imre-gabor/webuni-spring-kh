@@ -8,7 +8,7 @@
 		<version>2.6.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>hu.bme.aut.szoftlab</groupId>
+	<groupId>hu.webuni</groupId>
 	<artifactId>currency</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>currency</name>
@@ -35,7 +35,7 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		  <groupId>hu.bme.aut.szoftlab</groupId>
+		  <groupId>hu.webuni</groupId>
 		  <artifactId>currency-api</artifactId>
 		  <version>0.0.1-SNAPSHOT</version>
 		</dependency>
