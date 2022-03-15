@@ -24,12 +24,12 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 @RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	private final JwtService jwtService;
-
+	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/api/stomp");
@@ -46,25 +46,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(new ChannelInterceptor() {
+
 			@Override
 			public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
 				StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-				if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-
-					try {
-						List<String> authorization = accessor.getNativeHeader("X-Authorization");
-
-						UsernamePasswordAuthenticationToken authentication = JwtAuthFilter
-								.createUserDetailsFromAuthHeader(jwtService, authorization.get(0));
-						
-						accessor.setUser(authentication);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
+				if(StompCommand.CONNECT.equals(accessor.getCommand())) {
+					
+					List<String> authHeaders = accessor.getNativeHeader("X-Authorization");
+					
+					UsernamePasswordAuthenticationToken authentication = JwtAuthFilter.createUserDetailsFromAuthHeader(authHeaders.get(0), jwtService);
+					accessor.setUser(authentication);
 				}
+				
 				return message;
 			}
+
 		});
 	}
 

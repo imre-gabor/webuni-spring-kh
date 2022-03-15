@@ -18,7 +18,7 @@ export class FlightListComponent implements OnInit {
 
   constructor(
     private flightService: FlightService,
-    private authService: AuthService
+    private authService : AuthService
   ) { }
 
   ngOnInit(): void {

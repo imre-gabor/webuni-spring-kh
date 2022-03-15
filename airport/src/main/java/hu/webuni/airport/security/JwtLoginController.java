@@ -20,13 +20,11 @@ public class JwtLoginController {
 	@Autowired
 	JwtService jwtService;
 	
-	@PostMapping(value = "/api/login")
+	@PostMapping("/api/login")
 	public String login(@RequestBody LoginDto loginDto) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 		
-		return "\"" 
-			+ jwtService.creatJwtToken((UserDetails)authentication.getPrincipal())
-			+ "\"";
+		return "\""+ jwtService.creatJwtToken((UserDetails)authentication.getPrincipal()) + "\"";
 	}
 }
