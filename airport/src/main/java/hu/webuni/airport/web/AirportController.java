@@ -3,8 +3,6 @@ package hu.webuni.airport.web;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +19,7 @@ import hu.webuni.airport.dto.AirportDto;
 import hu.webuni.airport.mapper.AirportMapper;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.service.AirportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
