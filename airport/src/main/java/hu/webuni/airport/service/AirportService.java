@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionType;
@@ -19,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.model.HistoryData;
 import hu.webuni.airport.repository.AirportRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
