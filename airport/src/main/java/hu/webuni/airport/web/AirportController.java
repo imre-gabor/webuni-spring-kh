@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.validation.Valid;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -32,20 +30,21 @@ import hu.webuni.airport.model.HistoryData;
 import hu.webuni.airport.model.Image;
 import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.service.AirportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class AirportController implements AirportControllerApi {
-	
+
 	private final NativeWebRequest nativeWebRequest;
 	private final AirportService airportService;
 	private final AirportRepository airportRepository;
-	
+
 	private final AirportMapper airportMapper;
 	private final HistoryDataMapper historyDataMapper;
 	private final PageableHandlerMethodArgumentResolver pageableResolver;
-	
+
 	@Override
 	public Optional<NativeWebRequest> getRequest() {
 		return Optional.of(nativeWebRequest);
@@ -67,21 +66,21 @@ public class AirportController implements AirportControllerApi {
 	public ResponseEntity<AirportDto> getById(Long id) {
 		Airport airport = airportService.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		
+
 		return ResponseEntity.ok(airportMapper.airportSummaryToDto(airport));
 	}
 
 	@Override
 	public ResponseEntity<List<HistoryDataAirportDto>> getHistoryById(Long id) {
-		
+
 		List<HistoryData<Airport>> airports = airportService.getAirportHistory(id);
-		
+
 		List<HistoryDataAirportDto> airportDtosWithHistory = new ArrayList<>();
-		
-		airports.forEach(hd ->{
+
+		airports.forEach(hd -> {
 			airportDtosWithHistory.add(historyDataMapper.airportHistoryDataToDto(hd));
 		});
-		
+
 		return ResponseEntity.ok(airportDtosWithHistory);
 	}
 
@@ -98,23 +97,22 @@ public class AirportController implements AirportControllerApi {
 		}
 	}
 
-	public void configPageable(@SortDefault("id") Pageable pageable) {}
-	
+	public void configPageable(@SortDefault("id") Pageable pageable) {
+	}
+
 	@Override
 	public ResponseEntity<List<AirportDto>> getAll(@Valid Boolean full, @Valid Integer page, @Valid Integer size,
 			@Valid List<String> sort) {
-		
+
 		boolean isFull = full == null ? false : full;
-		
+
 		Pageable pageable = createPageable("configPageable");
-		
-		List<Airport> airports = isFull 
-				? airportService.findAllWithRelationships(pageable)
+
+		List<Airport> airports = isFull ? airportService.findAllWithRelationships(pageable)
 //				? airportRepository.findAllWithAddressAndDepartures() --> N*M sor jön vissza, ha N arrival és M departure van
 				: airportRepository.findAll(pageable).getContent();
-		
-		List<AirportDto> resultList = isFull 
-				? airportMapper.airportsToDtos(airports)
+
+		List<AirportDto> resultList = isFull ? airportMapper.airportsToDtos(airports)
 				: airportMapper.airportSummariesToDtos(airports);
 		return ResponseEntity.ok(resultList);
 	}
@@ -130,13 +128,13 @@ public class AirportController implements AirportControllerApi {
 		MethodParameter methodParameter = new MethodParameter(method, 0);
 		ModelAndViewContainer mavContainer = null;
 		WebDataBinderFactory binderFactory = null;
-		Pageable pageable = pageableResolver.resolveArgument(methodParameter, mavContainer, nativeWebRequest, binderFactory);
+		Pageable pageable = pageableResolver.resolveArgument(methodParameter, mavContainer, nativeWebRequest,
+				binderFactory);
 		return pageable;
 	}
 
 	@Override
-	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName,
-			@Valid MultipartFile content) {
+	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName, MultipartFile content) {
 		Image image;
 		try {
 			image = airportService.saveImageForAirport(id, fileName, content.getBytes());
@@ -147,7 +145,4 @@ public class AirportController implements AirportControllerApi {
 		}
 	}
 
-	
-	
-	
 }
