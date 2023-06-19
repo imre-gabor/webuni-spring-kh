@@ -2,8 +2,6 @@ package hu.webuni.airport.web;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +17,7 @@ import hu.webuni.airport.mapper.FlightMapper;
 import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.repository.FlightRepository;
 import hu.webuni.airport.service.FlightService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

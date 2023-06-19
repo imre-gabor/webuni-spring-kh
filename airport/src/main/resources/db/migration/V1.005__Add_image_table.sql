@@ -1,5 +1,6 @@
-create table image (id int8 not null, data bytea, file_name varchar(255), airport_id int8, primary key (id));
-create table image_aud (id int8 not null, rev int4 not null, revtype int2, data bytea, file_name varchar(255), primary key (id, rev));
+create sequence image_seq start with 1 increment by 50;
+create table image (airport_id bigint, id bigint not null, file_name varchar(255), data bytea, primary key (id));
+create table image_aud (rev integer not null, revtype smallint, id bigint not null, file_name varchar(255), data bytea, primary key (rev, id));
 
 alter table if exists image add constraint FKr3v11sq0fbqjqhb5xenrcob3c foreign key (airport_id) references airport;
 alter table if exists image_aud add constraint FKetc5y2t13bkdk5yuj4eswagd4 foreign key (rev) references revinfo;
