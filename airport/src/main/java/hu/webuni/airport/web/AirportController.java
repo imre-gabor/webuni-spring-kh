@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.validation.Valid;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -32,6 +30,7 @@ import hu.webuni.airport.model.HistoryData;
 import hu.webuni.airport.model.Image;
 import hu.webuni.airport.repository.AirportRepository;
 import hu.webuni.airport.service.AirportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -135,8 +134,7 @@ public class AirportController implements AirportControllerApi {
 	}
 
 	@Override
-	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName,
-			@Valid MultipartFile content) {
+	public ResponseEntity<String> uploadImageForAirport(Long id, @Valid String fileName, MultipartFile content) {
 		Image image;
 		try {
 			image = airportService.saveImageForAirport(id, fileName, content.getBytes());
