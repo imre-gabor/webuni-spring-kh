@@ -1,6 +1,5 @@
 package hu.webuni.airport.config;
 
-import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -21,11 +20,12 @@ public class JmsConfig {
 		return converter;
 	}
 	
+	/* only for ActiveMQ classic
 	@Bean
 	public BrokerService broker() throws Exception {
 		BrokerService brokerService = new BrokerService();
 		brokerService.addConnector("tcp://localhost:9999");
 //		brokerService.setPersistent(false);
 		return brokerService;
-	}
+	}*/
 }
