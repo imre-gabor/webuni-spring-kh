@@ -1,7 +1,5 @@
 package hu.webuni.airport.customer;
 
-import javax.jms.ConnectionFactory;
-
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +12,8 @@ import org.springframework.jms.support.converter.MessageType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.jms.ConnectionFactory;
+
 @Configuration
 public class JmsConfig {
 
@@ -25,6 +25,7 @@ public class JmsConfig {
 		converter.setTypeIdPropertyName("_type");
 		return converter;
 	}
+	
 	
 	@Bean
 	public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory, DefaultJmsListenerContainerFactoryConfigurer configurer){

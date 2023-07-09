@@ -2,10 +2,9 @@ package hu.webuni.airport.xmlws;
 
 import java.util.List;
 
-import javax.jws.WebService;
-import javax.xml.ws.ResponseWrapper;
-
 import hu.webuni.airport.api.model.HistoryDataAirportDto;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.ResponseWrapper;
 
 @WebService
 public interface AirportXmlWs {
