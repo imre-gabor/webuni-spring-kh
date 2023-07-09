@@ -8,7 +8,7 @@ import hu.webuni.airport.ws.DelayMessage;
 @Component
 public class DelayMessageConsumer {
 
-	@JmsListener(destination = "delays", containerFactory = "myFactory")
+	@JmsListener(destination = "delays"/*, containerFactory = "myFactory"*/)
 	public void onDelayMessage(DelayMessage delayMessage) {
 		System.out.println(delayMessage);
 	}
