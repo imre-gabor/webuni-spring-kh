@@ -60,8 +60,9 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.PUT, "/api/airports/**").hasAnyAuthority("user", "admin")
 					.anyRequest().authenticated()
 			)			
-			.oauth2Login()
-			.defaultSuccessUrl("/fbLoginSuccess", true)
+			.oauth2Login(oAuth2Login -> oAuth2Login 
+				.defaultSuccessUrl("/fbLoginSuccess", true)
+			)
 			;
 		
 		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
