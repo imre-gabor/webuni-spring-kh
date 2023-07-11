@@ -5,8 +5,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.Valid;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.querydsl.QuerydslPredicateArgumentResolver;
@@ -27,6 +25,7 @@ import hu.webuni.airport.model.Flight;
 import hu.webuni.airport.repository.FlightRepository;
 import hu.webuni.airport.service.FlightService;
 import hu.webuni.airport.ws.DelayMessage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
