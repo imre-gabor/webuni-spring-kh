@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import javax.xml.ws.AsyncHandler;
-
 import org.apache.cxf.annotations.UseAsyncMethod;
 import org.apache.cxf.jaxws.ServerAsyncResponse;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import hu.webuni.airport.model.Airport;
 import hu.webuni.airport.model.HistoryData;
 import hu.webuni.airport.service.AirportService;
 import hu.webuni.airport.service.DelayService;
+import jakarta.xml.ws.AsyncHandler;
 import lombok.RequiredArgsConstructor;
 
 @Service

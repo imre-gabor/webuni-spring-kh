@@ -1,6 +1,9 @@
 package hu.webuni.airport.config;
 
-import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.core.remoting.impl.netty.NettyAcceptorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -21,11 +24,13 @@ public class JmsConfig {
 		return converter;
 	}
 	
-	@Bean
-	public BrokerService broker() throws Exception {
-		BrokerService brokerService = new BrokerService();
-		brokerService.addConnector("tcp://localhost:9999");
-//		brokerService.setPersistent(false);
-		return brokerService;
+	@Configuration
+	public class ArtemisConfig implements ArtemisConfigurationCustomizer {
+	    @Override
+	    public void customize(org.apache.activemq.artemis.core.config.Configuration configuration) {
+	        // Allow Artemis to accept tcp connections (Default port localhost:61616)
+	        configuration.addConnectorConfiguration("nettyConnector", new TransportConfiguration(NettyConnectorFactory.class.getName()));
+	        configuration.addAcceptorConfiguration(new TransportConfiguration(NettyAcceptorFactory.class.getName()));
+	    }
 	}
 }
